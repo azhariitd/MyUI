@@ -1,0 +1,6 @@
+Add Ctor and dtor in all
+add max size, cause update size on orientation change
+
+Add Rectangle
+Add Renderermake
+
