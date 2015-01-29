@@ -114,3 +114,39 @@ bool IBase::Render(){
 	return true;
 }
 
+
+//......#region Input handler
+bool IBase::OnMouseDown (int button, float2& pos_){
+
+	float xDif = pos.x -pos_.x + 0.5f*size.x;
+	float yDif = pos.y -pos_.y + 0.5f*size.y;
+
+	if(xDif>0.0 && xDif< size.x && yDif>0.0f && yDif < size.y){
+
+		for(std::vector<IBase*>::iterator cur = children.begin();cur!=children.end();cur++){
+			if(*cur->OnMouseDown(button,pos) return true;		
+		}
+		return false;
+
+	}else{
+		return false;
+	}
+}
+
+
+bool IBase::OnMouseUp (int button, float2& pos_){
+
+	float xDif = pos.x -pos_.x + 0.5f*size.x;
+	float yDif = pos.y -pos_.y + 0.5f*size.y;
+
+	if(xDif>0.0 && xDif< size.x && yDif>0.0f && yDif < size.y){
+
+		for(std::vector<IBase*>::iterator cur = children.begin();cur!=children.end();cur++){
+			if(*cur->OnMouseUp(button,pos) return true;		
+		}
+		return false;
+
+	}else{
+		return false;
+	}
+}

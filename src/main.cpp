@@ -17,9 +17,24 @@ void OnSpecialKeyPressed(int key, int x, int y)
 
 
 void OnKeyPressed(unsigned char key, int x, int y){
-
 }
 
+void OnMousePressed(int button, int state, int x, int y){
+
+	if(button == GLUT_LEFT_BUTTON){
+		if(state==GLUT_UP) printf("Left button up at %d %d\n",x,y);
+		else if(state==GLUT_DOWN) printf("Left button down at %d %d\n",x,y);
+	}else
+
+	if(button == GLUT_RIGHT_BUTTON){
+		if(state==GLUT_UP) printf("Right button up at %d %d\n",x,y);
+		else if(state==GLUT_DOWN) printf("Right button down at %d %d\n",x,y);
+	}else
+	if(button == GLUT_MIDDLE_BUTTON){
+		if(state==GLUT_UP) printf("Middle button up at %d %d\n",x,y);
+		else if(state==GLUT_DOWN) printf("Middle button down at %d %d\n",x,y);
+	}
+}
 
 void ChangeSize(int width_, int height_){
 
@@ -109,6 +124,7 @@ int main(int argc, char** argv){
 	glutDisplayFunc(RenderScene);
 	glutSpecialFunc(OnSpecialKeyPressed);
 	glutKeyboardFunc(OnKeyPressed);
+	glutMouseFunc(OnMousePressed);
 	glutMainLoop();
 
 	
