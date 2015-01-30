@@ -62,14 +62,14 @@ class IBase{
 	public:
 		virtual bool Render();
 
-		/*
+		
 //#Region input handlers
 	public:
-		bool OnKeyPressed(Key key, int keyState);
-		bool OnMouseMoved(float2& pos, float2& delPos, int mouse, int keyState);
-		bool OnMouseDown(float2& pos);
-		bool OnMouseUp(float2& pos);
-*/
+//		bool OnKeyPressed(Key key, int keyState);
+//		bool OnMouseMoved(float2& pos, float2& delPos, int mouse, int keyState);
+		virtual bool OnMouseDown(int button,float2& pos);
+		virtual bool OnMouseUp(int button,float2& pos);
+
 
 		IBase();
 };

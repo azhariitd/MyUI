@@ -83,12 +83,13 @@ class Event{
 		RetType operator()(ArgType a)
 		{
 			typename std::vector<Base*>::iterator end = mPtrs.end();
-			for(typename std::vector<Base*>::iterator i = mPtrs.begin(); i+1!=end;i++)
+			RetType rt;
+			for(typename std::vector<Base*>::iterator i = mPtrs.begin(); i!=end;i++)
 			{
-				(**i)(a);
+				rt = 	(**i)(a);
 			}
 
-			return (**(mPtrs.end()-1))(a);
+			return rt;
 		}
 
 

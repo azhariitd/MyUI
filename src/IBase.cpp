@@ -124,7 +124,7 @@ bool IBase::OnMouseDown (int button, float2& pos_){
 	if(xDif>0.0 && xDif< size.x && yDif>0.0f && yDif < size.y){
 
 		for(std::vector<IBase*>::iterator cur = children.begin();cur!=children.end();cur++){
-			if(*cur->OnMouseDown(button,pos) return true;		
+			if((*cur)->OnMouseDown(button,pos_)) return true;		
 		}
 		return false;
 
@@ -142,7 +142,7 @@ bool IBase::OnMouseUp (int button, float2& pos_){
 	if(xDif>0.0 && xDif< size.x && yDif>0.0f && yDif < size.y){
 
 		for(std::vector<IBase*>::iterator cur = children.begin();cur!=children.end();cur++){
-			if(*cur->OnMouseUp(button,pos) return true;		
+			if((*cur)->OnMouseUp(button,pos_)) return true;		
 		}
 		return false;
 

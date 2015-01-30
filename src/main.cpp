@@ -7,6 +7,7 @@
 #include "StackPanel.h"
 #include "Rect.h"
 
+#include "MouseEvent.h"
 
 StackPanel* sp;
 
@@ -34,6 +35,13 @@ void OnMousePressed(int button, int state, int x, int y){
 		if(state==GLUT_UP) printf("Middle button up at %d %d\n",x,y);
 		else if(state==GLUT_DOWN) printf("Middle button down at %d %d\n",x,y);
 	}
+
+	float2 pos = float2(x,y);
+	if(state==GLUT_DOWN){
+		sp->OnMouseDown(button, pos);
+	}else if(state == GLUT_UP){
+		sp->OnMouseUp(button,pos);
+	}
 }
 
 void ChangeSize(int width_, int height_){
@@ -50,6 +58,12 @@ void ChangeSize(int width_, int height_){
 	glOrtho(0, width_, height_, 0, -1.0, 1.0);
 }
 
+bool OnRectClicked(MouseEventArg& me){
+	printf("Rect clicked \n");
+	return true;
+
+}
+
 void init(){
 	glClearColor(0.0f,0.0f,0.0f,0.0f);
 	
@@ -59,6 +73,9 @@ void init(){
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
+
+
+	MouseEvent::S *ev = new MouseEvent::S(OnRectClicked);
 
 	sp = new StackPanel();
 	sp->SetOrientation(Vertical);
@@ -76,6 +93,8 @@ void init(){
 
 	for(int i=0;i<5;i++){
 		Rect *rt = new Rect();
+	//	rt->mouseEvent += ev;
+		keCharacter(GLUT_STROKE_ROMAN, quote[l][i]);
 		sp2->AddChild(rt);
 
 		
