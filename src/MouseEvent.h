@@ -5,9 +5,9 @@
 #include "Event.h"
 
 typedef enum Button_{
-	LeftButton,
-	RightButton,
-	MiddleButton,
+	LeftButton=1,
+	RightButton=2,
+	MiddleButton=4,
 }Button;
 
 typedef enum State_{

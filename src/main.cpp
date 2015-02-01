@@ -5,11 +5,13 @@
 #include <GL/glu.h>
 
 #include "StackPanel.h"
+#include "Slider.h"
 #include "Rect.h"
 
 #include "MouseEvent.h"
 
 StackPanel* sp;
+int mouseButtonState;
 
 void OnSpecialKeyPressed(int key, int x, int y)
 {
@@ -18,6 +20,18 @@ void OnSpecialKeyPressed(int key, int x, int y)
 
 
 void OnKeyPressed(unsigned char key, int x, int y){
+}
+
+void OnMouseMove(int x, int y){
+	printf("Mouse moved with state %x\n",mouseButtonState);
+
+}
+
+void OnPassiveMouseMove(int x, int y){
+	printf("Mouse moved passive with state %x\n",mouseButtonState);
+
+
+
 }
 
 void OnMousePressed(int button, int state, int x, int y){
@@ -42,6 +56,24 @@ void OnMousePressed(int button, int state, int x, int y){
 	}else if(state == GLUT_UP){
 		sp->OnMouseUp(button,pos);
 	}
+
+	printf("Buttons %d %d %d\n",LeftButton,RightButton,MiddleButton);
+	int mouseState = 0;
+	if(button ==GLUT_LEFT_BUTTON){
+		mouseState = LeftButton;
+	}else if(button ==GLUT_RIGHT_BUTTON){
+		mouseState = RightButton;
+	}else if(button == GLUT_MIDDLE_BUTTON){
+		mouseState = MiddleButton;
+	}
+
+	
+	if(state == GLUT_DOWN){
+		mouseButtonState |= mouseState;
+	}else if(state == GLUT_UP){
+		mouseButtonState &= ~mouseState;
+	}
+	printf("MOuse state %x %x \n", mouseState, mouseButtonState);
 }
 
 void ChangeSize(int width_, int height_){
@@ -71,30 +103,29 @@ void init(){
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
+//	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_NEVER);
 
+	mouseButtonState = 0;
 
 	MouseEvent::S *ev = new MouseEvent::S(OnRectClicked);
 
 	sp = new StackPanel();
-	sp->SetOrientation(Vertical);
+	sp->SetOrientation(Horizontal);
 	StackPanel* sp2 = new StackPanel();
 	sp2->SetOrientation(Horizontal);
 	sp->AddChild(sp2);
 	for(int i=0;i<5;i++){
-		Rect *rt = new Rect();
-		sp->AddChild(rt);
+		Slider* sl = new Slider();
+		sp->AddChild(sl);
 
 		
-		rt->SetColor(float3(i/4,i/3,(i+1)/2));
 
 	}
 
 	for(int i=0;i<5;i++){
 		Rect *rt = new Rect();
 	//	rt->mouseEvent += ev;
-		keCharacter(GLUT_STROKE_ROMAN, quote[l][i]);
 		sp2->AddChild(rt);
 
 		
@@ -118,7 +149,7 @@ void drawUnitRectangle(){
 
 void RenderScene(){
 	
-	glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
 	glColor3f(1.0f,1.0f,0.0f);
 
 
@@ -144,9 +175,11 @@ int main(int argc, char** argv){
 	glutSpecialFunc(OnSpecialKeyPressed);
 	glutKeyboardFunc(OnKeyPressed);
 	glutMouseFunc(OnMousePressed);
+	glutMotionFunc(OnMouseMove);
+	glutPassiveMotionFunc(OnPassiveMouseMove);
 	glutMainLoop();
 
-	
+		
 
 	return 0;
 }
