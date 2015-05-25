@@ -1,15 +1,35 @@
-main: src/main.cpp Rect StackPanel IBase Slider
-	g++ -Wall -g bin/IBase bin/Rect bin/StackPanel bin/Slider  src/main.cpp -lGL -lglut -o bin/main
 
-Slider: IBase src/Slider.cpp src/Slider.h
-	g++ -Wall -c -g src/Slider.cpp -o bin/Slider
+CXX = g++
+LINKER = g++ -o
 
 
-Rect: IBase src/Rect.cpp src/Rect.h
-	g++ -Wall -c -g src/Rect.cpp -o bin/Rect
+LIBS= -lGL -lglut -lSOIL -lm -lfreetype `freetype-config --libs`
+CFLAGS = -Wall -g 
+INCLUDE = `freetype-config --cflags`
+TARGET =  main
 
-StackPanel: IBase src/StackPanel.cpp src/StackPanel.h
-	g++ -Wall -c -g src/StackPanel.cpp -o bin/StackPanel
+SRCDIR = src
+OBJDIR = obj
+BINDIR = bin
 
-IBase: src/IBase.cpp src/IBase.h
-	g++ -Wall -c -g src/IBase.cpp -o bin/IBase
+SOURCES  := $(wildcard $(SRCDIR)/*.cpp)
+INCLUDES := $(wildcard $(SRCDIR)/*.h)
+OBJECTS  := $(SOURCES:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
+
+
+
+
+$(TARGET): $(OBJECTS)
+	$(CXX) -o  $@ $(LFLAGS) $(OBJECTS) $(LIBS) 
+	@echo "Linking complete!"
+
+
+$(OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $< -o $@
+	@echo "Compiled "$<" successfully!"
+
+
+
+Clean:
+	rm bin/*
+	rm main

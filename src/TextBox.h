@@ -1,11 +1,16 @@
 #include "IBase.h"
 #include "MouseEvent.h"
+#include "FontManager.h"
 
-class Rect:public IBase{
+
+
+class TextBox:public IBase{
 
 private:
 	float3 color;
-
+	FontInfo *font;
+	char text[32];
+	float textWidth;
 public:
 	void SetColor(float3 color_);
 	virtual bool Render();
@@ -16,5 +21,7 @@ public:
 	virtual bool OnMouseDown(int button, float2& pos);
 	virtual bool OnMouseUp(int button, float2& pos);
 	
-	Rect();
+	TextBox(FontInfo* font_,char* text);
+	TextBox(FontInfo* font_);
+	void SetText(char* text);
 };

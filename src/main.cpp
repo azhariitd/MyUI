@@ -4,136 +4,33 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-#include "StackPanel.h"
+//#include "StackPanel.h"
 #include "Slider.h"
 #include "Rect.h"
-
+#include "GraphDisplay.h"
 #include "MouseEvent.h"
+#include "Canvas.h"
+#include "StateButton.h"
+#include "Grid.h"
+#include "PlotWrap.h"
+#include "TextBox.h"
+#include "FontManager.h"
 
-StackPanel* sp;
-int mouseButtonState;
-
-void OnSpecialKeyPressed(int key, int x, int y)
-{
-}
-
-
-
-void OnKeyPressed(unsigned char key, int x, int y){
-}
-
-void OnMouseMove(int x, int y){
-	printf("Mouse moved with state %x\n",mouseButtonState);
-
-}
-
-void OnPassiveMouseMove(int x, int y){
-	printf("Mouse moved passive with state %x\n",mouseButtonState);
-
-
-
-}
-
-void OnMousePressed(int button, int state, int x, int y){
-
-	if(button == GLUT_LEFT_BUTTON){
-		if(state==GLUT_UP) printf("Left button up at %d %d\n",x,y);
-		else if(state==GLUT_DOWN) printf("Left button down at %d %d\n",x,y);
-	}else
-
-	if(button == GLUT_RIGHT_BUTTON){
-		if(state==GLUT_UP) printf("Right button up at %d %d\n",x,y);
-		else if(state==GLUT_DOWN) printf("Right button down at %d %d\n",x,y);
-	}else
-	if(button == GLUT_MIDDLE_BUTTON){
-		if(state==GLUT_UP) printf("Middle button up at %d %d\n",x,y);
-		else if(state==GLUT_DOWN) printf("Middle button down at %d %d\n",x,y);
-	}
-
-	float2 pos = float2(x,y);
-	if(state==GLUT_DOWN){
-		sp->OnMouseDown(button, pos);
-	}else if(state == GLUT_UP){
-		sp->OnMouseUp(button,pos);
-	}
-
-	printf("Buttons %d %d %d\n",LeftButton,RightButton,MiddleButton);
-	int mouseState = 0;
-	if(button ==GLUT_LEFT_BUTTON){
-		mouseState = LeftButton;
-	}else if(button ==GLUT_RIGHT_BUTTON){
-		mouseState = RightButton;
-	}else if(button == GLUT_MIDDLE_BUTTON){
-		mouseState = MiddleButton;
-	}
-
-	
-	if(state == GLUT_DOWN){
-		mouseButtonState |= mouseState;
-	}else if(state == GLUT_UP){
-		mouseButtonState &= ~mouseState;
-	}
-	printf("MOuse state %x %x \n", mouseState, mouseButtonState);
-}
-
-void ChangeSize(int width_, int height_){
-
-	glViewport(0,0, width_,height_);
-	
-	float2 size = float2(width_,height_);
-	float2 pos = float2(width_/2,height_/2);
-	printf("Width Height %f %f\n",size.x, size.y);
-	sp->SetContainingRectangle(size, pos);
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0, width_, height_, 0, -1.0, 1.0);
-}
-
-bool OnRectClicked(MouseEventArg& me){
-	printf("Rect clicked \n");
-	return true;
-
-}
-
+Grid* sp;
 void init(){
-	glClearColor(0.0f,0.0f,0.0f,0.0f);
+	PlotWrap *p = new PlotWrap();
+	sp = new Grid();
+	sp->AddRowDefinition(Relative,1.0f);
+	sp->AddColumnDefinition(Relative,1.0f);
+	FontManager fm =  FontManager();
+	FontInfo* fi = fm.OpenFont("a.ttf",18);
+//	TextBox* tb = new TextBox(fi,"Aloo lelo");
+	sp->AddChild(0,0,p);
 	
 
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-
-//	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_NEVER);
-
-	mouseButtonState = 0;
-
-	MouseEvent::S *ev = new MouseEvent::S(OnRectClicked);
-
-	sp = new StackPanel();
-	sp->SetOrientation(Horizontal);
-	StackPanel* sp2 = new StackPanel();
-	sp2->SetOrientation(Horizontal);
-	sp->AddChild(sp2);
-	for(int i=0;i<5;i++){
-		Slider* sl = new Slider();
-		sp->AddChild(sl);
-
-		
-
-	}
-
-	for(int i=0;i<5;i++){
-		Rect *rt = new Rect();
-	//	rt->mouseEvent += ev;
-		sp2->AddChild(rt);
-
-		
-		rt->SetColor(float3(i/4,i/3,(i+1)/2));
-
-	}
-
-
+	p->SetHorizontalAllignment(Stretch);
+	p->SetVerticalAllignment(Stretch);
+	App::SetBasePanel(sp);
 }
 
 void drawUnitRectangle(){
@@ -164,22 +61,12 @@ void RenderScene(){
 
 int main(int argc, char** argv){
 	
-	glutInit(&argc,argv);
-	glutInitDisplayMode(GLUT_SINGLE|GLUT_RGB|GLUT_DEPTH );
-	glutInitWindowSize(600,400);
-	glutCreateWindow("MyUi");
-
+	App::InitializeOpenGl("My Window",400,300);
 	init();
-	glutReshapeFunc(ChangeSize);
-	glutDisplayFunc(RenderScene);
-	glutSpecialFunc(OnSpecialKeyPressed);
-	glutKeyboardFunc(OnKeyPressed);
-	glutMouseFunc(OnMousePressed);
-	glutMotionFunc(OnMouseMove);
-	glutPassiveMotionFunc(OnPassiveMouseMove);
-	glutMainLoop();
-
-		
+	App::StartApp();
+	
 
 	return 0;
 }
+
+

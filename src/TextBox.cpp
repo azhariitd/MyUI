@@ -1,21 +1,35 @@
-#include "Rect.h"
-
+#include "TextBox.h"
 #include<stdio.h>
+#include <string.h>
+#include <iostream>
+using namespace std;
 
-
-Rect::Rect(){
-	SetColor(float3(RandFloat(),RandFloat(),RandFloat()));
+TextBox::TextBox(FontInfo *font_){
+	SetColor(float3(0,1.0f,0));
+	font = font_;
 
 }
 
-void Rect::SetColor(float3 color_){
+TextBox::TextBox(FontInfo* font_, char *text_){
+	font = font_;
+	strcpy(text, text_);
+	SetColor(float3(0.0f,1.0f,0.0f));
 
-	//color = color_;
 }
-bool Rect::Render(){
+
+void TextBox::SetText(char* text_){
+	strcpy(text,text_);
+}
+
+void TextBox::SetColor(float3 color_){
+
+	color = float3(color_);
+}
+
+bool TextBox::Render(){
 
 	glColor3fv((float*)(&color));
-	//glColor3f(1.0f,1.0f,1.0f);	
+	glColor3f(1.0f,1.0f,1.0f);	
 
 
 	glBegin(GL_QUADS);
@@ -26,10 +40,17 @@ bool Rect::Render(){
 
 	glEnd();
 
+	glColor3f(0.0f,0.0f,0.0f);
+	
+	glPushMatrix();
+	glTranslatef(pos.x - 0.5f*size.x,pos.y,0.0f);
+	font->PrintText(text);
+	glPopMatrix();
+
 	return true;
 }
 
-bool Rect::OnMouseDown (int button, float2& pos_){
+bool TextBox::OnMouseDown (int button, float2& pos_){
 
 	float xDif = pos.x -pos_.x + 0.5f*size.x;
 	float yDif = pos.y -pos_.y + 0.5f*size.y;
@@ -51,7 +72,7 @@ bool Rect::OnMouseDown (int button, float2& pos_){
 
 }
 
-bool Rect::OnMouseUp (int button, float2& pos_){
+bool TextBox::OnMouseUp (int button, float2& pos_){
 
 	float xDif = pos.x -pos_.x + 0.5f*size.x;
 	float yDif = pos.y -pos_.y + 0.5f*size.y;

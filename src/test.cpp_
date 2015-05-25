@@ -1,0 +1,199 @@
+#include <stdio.h>
+#include<GL/glut.h>
+#include<GL/gl.h>
+#include<GL/glu.h>
+#include <string.h>
+#include <ft2build.h>
+#include <freetype2/freetype.h>
+#include <freetype2/ftglyph.h>
+#include <freetype2/ftoutln.h>
+#include <freetype2/fttrigon.h>
+#include FT_FREETYPE_H
+
+#include <iostream>
+using namespace std;
+
+void Print(char *);
+
+GLuint listBase;
+GLuint* textures;
+void Render(){
+
+	glClear(GL_COLOR_BUFFER_BIT);
+	glLoadIdentity();
+	glTranslatef(0.0f,100.0f,0.0f);
+	glColor3f(1.0f,1.0f,1.0f);
+	char string[] = "Aloo lelo!";
+//	glCallList(listBase+ (unsigned int)'A');
+	Print(string);
+//	glCallList(listBase+ 'B');
+	
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D,textures['B']);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+
+
+
+	glBegin(GL_QUADS);
+		glTexCoord2f(0.0f,1.0f); glColor3f(1.0f,0.0f,0.0f); glVertex2f(100.0f,100.0f);
+		glTexCoord2f(0.0f,0.0f); glColor3f(0.0f,1.0f,0.0f); glVertex2f(100.0f,200.0f);
+		glTexCoord2f(1.0f,0.0f); glColor3f(0.0f,0.0f,1.0f); glVertex2f(200.0f,200.0f);
+		glTexCoord2f(1.0f,1.0f); glColor3f(1.0f,1.0f,0.0f); glVertex2f(200.0f,100.0f);
+	glEnd();
+	cout << "rendering" << endl;		
+
+
+	glFlush();
+}
+
+void Resize(int width, int height){
+
+	glViewport(0,0,width, height);
+	
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0,width,0,height,-1.0,1.0);
+	glMatrixMode(GL_MODELVIEW);
+
+}
+
+int nextp2(int a){
+	int v = 1;
+	while(v<a) v*=2;
+	return v;
+}
+
+void MakeTexture(FT_Face face, char ch, GLuint listBase, GLuint* textureId){
+	if(FT_Load_Glyph(face, FT_Get_Char_Index(face, ch), FT_LOAD_DEFAULT)){
+		cerr<< "Failed to load glyph " << endl;
+		return;
+	}
+
+	FT_Glyph glyph;
+	if(FT_Get_Glyph(face->glyph,&glyph)){
+		cerr << "Failed to get glyph for" << endl;
+	
+	}
+
+	FT_Glyph_To_Bitmap(&glyph,ft_render_mode_normal,0,1);
+	FT_BitmapGlyph bitmapGlyph = (FT_BitmapGlyph)glyph;
+
+	FT_Bitmap& bitmap = bitmapGlyph->bitmap;
+
+	int width = nextp2(bitmap.width);
+	int height = nextp2(bitmap.rows);
+
+	GLubyte* expandedData = new GLubyte[2*width*height];
+	
+	for(int j=0;j<height;j++){
+		for(int i=0;i<width;i++){
+			expandedData[2*(i+j*width)] =  expandedData[2*(i+j*width)+1] = (i>=bitmap.width || j>=bitmap.rows) ? 0:bitmap.buffer[i+bitmap.width*j];
+		}
+	}
+
+	glBindTexture(GL_TEXTURE_2D,*textureId);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+
+	glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,width,height,0,GL_LUMINANCE_ALPHA,GL_UNSIGNED_BYTE,expandedData);
+
+	delete [] expandedData;
+
+	glNewList(listBase+ch,GL_COMPILE);
+	glBindTexture(GL_TEXTURE_2D,*textureId);
+	glPushMatrix();
+	glTranslatef(bitmapGlyph->left,0  ,0.0f);
+	glTranslatef(0,bitmapGlyph->top - bitmap.rows  ,0.0f);
+	float x = (float)bitmap.width/(float)width;
+	float y = (float)bitmap.rows/(float)height;
+
+	glBegin(GL_QUADS);
+		glTexCoord2d(0.0f,0.0f); glVertex2f(0,bitmap.rows);
+		glTexCoord2d(0.0f,y); glVertex2f(0,0);
+		glTexCoord2d(x,y); glVertex2f(bitmap.width,0);
+		glTexCoord2d(x,0.0f); glVertex2f(bitmap.width,bitmap.rows);
+	glEnd();
+	
+	glPopMatrix();
+	glTranslatef(face->glyph->advance.x>>6,0.0f,0.0f);
+	glEndList();	
+
+
+
+
+}
+
+
+
+void Print(char* string){
+
+	float h = 18*1.2f;
+
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+	glListBase(listBase);
+	glPushMatrix();
+	glCallLists(strlen(string),GL_UNSIGNED_BYTE,string);	
+	glPopMatrix();	
+	cout << "Wrote " << string << endl;
+
+}
+
+void InitFt(){
+
+	textures = new GLuint[128];
+	 listBase = glGenLists(128);
+	glGenTextures(128,textures);
+
+	FT_Library ft;
+	if(FT_Init_FreeType(&ft)){
+		cerr << "Failed to init freetype" << endl;
+		exit(1);
+	}
+
+	FT_Face face;
+	if(FT_New_Face(ft,"x.ttf",0,&face)){
+		cerr << "Failed to open font"<< endl;
+		exit(1);
+	}
+	
+	FT_Set_Char_Size(face,96 <<6, 96<<6 , 96,96);
+	for(unsigned char i=0;i<128;i++){
+		MakeTexture(face,i,listBase,textures+i);
+	}
+
+	FT_Done_Face(face);
+	FT_Done_FreeType(ft);
+
+}
+
+void CleanFT(){
+	glDeleteLists(listBase,128);
+	glDeleteTextures(128,textures);
+	delete[] textures;
+}
+
+void InitGl(){
+	int cnt = 0;
+	glutInit(&cnt,NULL);
+	glutInitDisplayMode(GLUT_SINGLE|GLUT_RGB);
+	glutInitWindowSize(400,300);
+	glutCreateWindow("text test");
+
+	glutDisplayFunc(Render);
+	glutReshapeFunc(Resize);
+
+}
+
+int main(){
+
+	InitGl();
+	InitFt();
+	glutMainLoop();
+
+	CleanFT();
+}

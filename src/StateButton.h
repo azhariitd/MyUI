@@ -1,11 +1,15 @@
 #include "IBase.h"
 #include "MouseEvent.h"
 
-class Rect:public IBase{
+class StateButton:public IBase{
 
 private:
 	float3 color;
+	static GLuint textureId;
 
+	void CreateTexture();
+	int state;
+	
 public:
 	void SetColor(float3 color_);
 	virtual bool Render();
@@ -16,5 +20,6 @@ public:
 	virtual bool OnMouseDown(int button, float2& pos);
 	virtual bool OnMouseUp(int button, float2& pos);
 	
-	Rect();
+	StateButton();
 };
+

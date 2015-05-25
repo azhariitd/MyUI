@@ -1,7 +1,8 @@
 #include<vector>
 
 
-
+#ifndef EVENT_INCLUDE__
+#define EVENT_INCLUDE__
 
 
 template<typename RetType, typename ArgType>
@@ -95,3 +96,5 @@ class Event{
 
 };
 
+
+#endif

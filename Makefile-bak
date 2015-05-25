@@ -1,0 +1,35 @@
+
+LIBS= -lGL -lglut -lSOIL -lm
+CFLAGS = -Wall -g -c
+
+
+bin/main: src/main.cpp Rect StackPanel IBase bin/Slider GraphDisplay Canvas bin/StateButton App
+	$(CXX) -Wall -g bin/IBase bin/Rect bin/Canvas bin/StackPanel bin/Slider bin/GraphDisplay bin/StateButton bin/App src/main.cpp -lGL -lglut -lSOIL -o bin/main
+
+bin/StateButton:
+	$(CXX) $(CFLAGS) src/StateButton.cpp -o bin/StateButton
+
+
+bin/Slider: IBase src/Slider.cpp src/Slider.h
+	$(CXX) $(CFLAGS) src/Slider.cpp -o bin/Slider
+
+GraphDisplay: IBase src/GraphDisplay.h src/GraphDisplay.cpp
+
+Rect: IBase src/Rect.cpp src/Rect.h
+	$(CXX) $(CFLAGS) src/Rect.cpp -o bin/Rect
+
+StackPanel: IBase src/StackPanel.cpp src/StackPanel.h
+	$(CXX) $(CFLAGS) src/StackPanel.cpp -o bin/StackPanel
+
+Canvas: IBase src/Canvas.cpp src/Canvas.h
+	$(CXX) $(CFLAGS) src/Canvas.cpp -o bin/Canvas
+
+App: src/App.cpp src/App.h
+	$(CXX) $(CFLAGS) src/App.cpp -o bin/App
+
+IBase: src/IBase.cpp src/IBase.h
+	$(CXX) $(CFLAGS) src/IBase.cpp -o bin/IBase
+
+
+Clean:
+	rm bin/*

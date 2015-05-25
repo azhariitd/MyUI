@@ -8,6 +8,8 @@ typedef enum SlOrientation_{
 
 #define HANDLEWIDTH 32
 #define HANDLEHEIGHT 16
+#define HANDLEMARGIN 32
+
 
 class Slider:public IBase{
 

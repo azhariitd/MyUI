@@ -1,11 +1,12 @@
-#include "IBase.h"
+#include "Grid.h"
 #include "MouseEvent.h"
-
-class Rect:public IBase{
+#include "PlotScroll.h"
+#include "Plot.h"
+class PlotWrap:public Grid{
 
 private:
 	float3 color;
-
+	Plot* plot;
 public:
 	void SetColor(float3 color_);
 	virtual bool Render();
@@ -16,5 +17,8 @@ public:
 	virtual bool OnMouseDown(int button, float2& pos);
 	virtual bool OnMouseUp(int button, float2& pos);
 	
-	Rect();
+
+	
+	PlotWrap();
+	bool OnHorizontalScrollChange(PlotScrollEventArgs &arg);
 };

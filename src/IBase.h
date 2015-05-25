@@ -3,15 +3,20 @@
 #include <vector>
 #include <stdlib.h>
 
+#define GL_GLEXT_PROTOTYPES
+
 #include <GL/glut.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-
+#include "App.h"
 
 #ifndef IBASE_HEADER
 
 #define IBASE_HEADER
+
+
+
 
 using namespace std;
 
@@ -37,7 +42,9 @@ class IBase{
 		virtual void SetContainingRectangle(float2& size_, float2& pos_) ;
 		void SetHorizontalAllignment(Allignment allignment) ;
 		void SetVerticalAllignment(Allignment allignment);
-
+		
+		float2 GetAbsSize();
+		float2 GetSize();
 
 //#Region userdata
 	private:
@@ -54,8 +61,8 @@ class IBase{
 		IBase *parent;
 
 	public:
-		bool AddChild(IBase* child);
-		bool RemoveChild(IBase* child);
+		virtual bool AddChild(IBase* child);
+		virtual bool RemoveChild(IBase* child);
 		void SetParent(IBase* parent_);
 		
 //#Region Render
@@ -66,12 +73,15 @@ class IBase{
 //#Region input handlers
 	public:
 //		bool OnKeyPressed(Key key, int keyState);
-//		bool OnMouseMoved(float2& pos, float2& delPos, int mouse, int keyState);
+		virtual bool OnMouseMove(float2& pos, float2& delPos, int mouse);
 		virtual bool OnMouseDown(int button,float2& pos);
 		virtual bool OnMouseUp(int button,float2& pos);
 
 
 		IBase();
+
+
+		float RandFloat();
 };
 
 #endif

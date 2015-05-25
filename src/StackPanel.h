@@ -22,6 +22,8 @@ public:
 
 	StackPanel();
 
+	virtual bool Render();	
+
 };
 
 #endif

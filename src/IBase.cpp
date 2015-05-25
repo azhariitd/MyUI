@@ -2,12 +2,18 @@
 
 
 IBase::IBase(){
-	horAlignment = Stretch;
-	verAlignment = Stretch;
+	horAlignment = Center;
+	verAlignment = Center;
+
+	children.clear();
+	absSize = float2(100.0f,100.0f);
 
 }
 
+float IBase::RandFloat(){
 
+	return (float)rand()/(float)RAND_MAX;
+}
 
 ///////////////////////////////
 //REGION BASE DEFINITIONS /////
@@ -16,9 +22,9 @@ IBase::IBase(){
 //......#Region Metrics 
 void IBase::SetContainingRectangle(float2& size_, float2& pos_){
 
-	if(horAlignment==Stretch) size.x = size_.x;
+	if(horAlignment==Stretch || size_.x < size.x) size.x = size_.x;
 	else size.x = absSize.x;
-	if(verAlignment==Stretch) size.y = size_.y;
+	if(verAlignment==Stretch || size_.y < size.y)  size.y = size_.y;
 	else size.y = absSize.y;
 
 		
@@ -36,12 +42,20 @@ void IBase::SetContainingRectangle(float2& size_, float2& pos_){
 }
 
 void IBase::SetHorizontalAllignment(Allignment alignment){
-	if(horAlignment==alignment) horAlignment=alignment;
+	if(horAlignment!=alignment) horAlignment=alignment;
 }
 
 
 void IBase::SetVerticalAllignment(Allignment alignment){
-	if(verAlignment==alignment) verAlignment=alignment;
+	if(verAlignment!=alignment) verAlignment=alignment;
+}
+
+float2 IBase::GetAbsSize(){
+	return absSize;
+}
+
+float2 IBase::GetSize(){
+	return size;
 }
 
 //.......#Region userdata
@@ -131,6 +145,25 @@ bool IBase::OnMouseDown (int button, float2& pos_){
 	}else{
 		return false;
 	}
+}
+bool IBase::OnMouseMove(float2& pos_, float2& delPos, int mouse){
+
+	float xDif = pos.x -pos_.x + 0.5f*size.x;
+	float yDif = pos.y -pos_.y + 0.5f*size.y;
+
+	if(xDif>0.0 && xDif< size.x && yDif>0.0f && yDif < size.y){
+
+		for(std::vector<IBase*>::iterator cur = children.begin();cur!=children.end();cur++){
+			if((*cur)->OnMouseMove(pos_,delPos,mouse)) return true;		
+		}
+		return false;
+
+	}else{
+		return false;
+	}
+
+
+
 }
 
 
